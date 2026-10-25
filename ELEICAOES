@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Eleição: Lula x Bolsonaro - Live Interativa</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0b132b, #1c2541, #3a506b);
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            overflow: hidden;
+        }
+
+        header {
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        p.subtitle {
+            font-size: 0.95rem;
+            color: #00e5ff;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .arena {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            gap: 12px;
+            margin: auto 0;
+        }
+
+        .candidate-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 18px;
+            padding: 15px 10px;
+            width: 49%;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .avatar {
+            font-size: 3.2rem;
+            margin-bottom: 5px;
+        }
+
+        .candidate-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .party {
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+
+        .votes-count {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            height: 16px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 50%;
+            transition: width 0.25s ease-out;
+            border-radius: 10px;
+        }
+
+        #c1 .progress-bar { background: linear-gradient(90deg, #ff416c, #ff4b2b); }
+        #c2 .progress-bar { background: linear-gradient(90deg, #00c6ff, #0072ff); }
+
+        .btn-vote {
+            width: 100%;
+            border: none;
+            padding: 14px 0;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 12px;
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        #btn1 { background: #ff0050; }
+        #btn2 { background: #0072ff; }
+
+        .controls-footer {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .reset-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            font-size: 0.85rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Batalha de Votos ao Vivo</h1>
+        <p class="subtitle">Comente 1 ou 2 no chat para votar!</p>
+    </header>
+
+    <div class="arena">
+        <!-- Candidato 1: Lula -->
+        <div class="candidate-card" id="c1">
+            <div class="avatar">🔴</div>
+            <div class="candidate-name">Lula</div>
+            <div class="party">Partido PT</div>
+            <div class="votes-count" id="votos1">0</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="bar1"></div>
+            </div>
+            <button class="btn-vote" id="btn1" onclick="votar(1)">+1 Voto (Lula)</button>
+        </div>
+
+        <!-- Candidato 2: Bolsonaro -->
+        <div class="candidate-card" id="c2">
+            <div class="avatar">🟢</div>
+            <div class="candidate-name">Bolsonaro</div>
+            <div class="party">Partido PL</div>
+            <div class="votes-count" id="votos2">0</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="bar2"></div>
+            </div>
+            <button class="btn-vote" id="btn2" onclick="votar(2)">+1 Voto (Bolsonaro)</button>
+        </div>
+    </div>
+
+    <div class="controls-footer">
+        <button class="reset-btn" onclick="zerarPlacar()">Zerar Placar</button>
+    </div>
+
+    <script>
+        let v1 = 0;
+        let v2 = 0;
+
+        function votar(candidato) {
+            if (candidato === 1) {
+                v1++;
+            } else if (candidato === 2) {
+                v2++;
+            }
+            atualizarValores();
+        }
+
+        function zerarPlacar() {
+            v1 = 0;
+            v2 = 0;
+            atualizarValores();
+        }
+
+        function atualizarValores() {
+            document.getElementById('votos1').innerText = v1;
+            document.getElementById('votos2').innerText = v2;
+
+            let total = v1 + v2;
+            let p1 = total === 0 ? 50 : (v1 / total) * 100;
+            let p2 = total === 0 ? 50 : (v2 / total) * 100;
+
+            document.getElementById('bar1').style.width = p1 + '%';
+            document.getElementById('bar2').style.width = p2 + '%';
+        }
+    </script>
+</body>
+</html>
